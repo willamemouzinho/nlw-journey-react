@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind utilities;
+@tailwind components;
+
+* {
+  min-width: 0;
+}
+
+input {
+  color-scheme: dark;
+}
