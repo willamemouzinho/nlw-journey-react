@@ -1,5 +1,5 @@
 import { Link2Icon, PlusIcon } from "lucide-react";
-import { Button } from "../../components/button";
+import { Button } from "../../../components/button";
 
 interface ImportantLinksProps {}
 
