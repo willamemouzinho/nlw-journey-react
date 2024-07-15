@@ -1,3 +1,5 @@
+/* import "react-day-picker/dist/style.css"; */
+
 @tailwind base;
 @tailwind utilities;
 @tailwind components;
@@ -8,4 +10,13 @@
 
 input {
   color-scheme: dark;
+}
+
+/* :root {
+  --rdp-accent-color: rgb(95, 181, 10);
+  --rdp-background-color: rgb(244, 150, 0);
+} */
+
+.rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
+  background-color: var(--rdp-background-color);
 }

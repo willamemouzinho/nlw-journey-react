@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "../../../../components/button";
+import { DayPickerRange, RangeMinMax } from "../../../../components/day-picker";
 
 interface DestinationAndDateStepProps {
   isLocationAndDateInputEditable: boolean;
@@ -45,6 +46,7 @@ export function DestinationAndDateStep({
             className="flex h-9 w-full items-center bg-transparent placeholder-zinc-400 outline-none"
           />
         </div>
+
         <div className="flex items-center gap-x-2">
           <CalendarIcon strokeWidth={2} size={20} className="text-zinc-400" />
           <input
