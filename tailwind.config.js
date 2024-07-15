@@ -14,6 +14,21 @@ export default {
       backgroundImage: {
         pattern: 'url(/bg.png)',
       },
+      animation: {
+        'spin-slow': 'spin 3s linear infinite',
+        wiggle: 'wiggle 1s ease-in-out infinite',
+        front: 'front 1s infinite',
+      },
+      keyframes: {
+        wiggle: {
+          '0%, 100%': { transform: 'rotate(-3deg)' },
+          '50%': { transform: 'rotate(3deg)' },
+        },
+        front: {
+          '0%, 100%': { transform: 'translateX(-25%)' },
+          '50%': { transform: 'translateX(0)' },
+        },
+      },
     },
   },
   plugins: [],
