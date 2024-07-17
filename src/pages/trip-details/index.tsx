@@ -4,14 +4,13 @@ import { CreateActivityModal } from "./components/create-activity-modal";
 import { Activities } from "./components/activities";
 import { ImportantLinks } from "./components/important-links";
 import { Guests } from "./components/guests";
-import { DestinationAndDateHeader } from "./components/destination-and-date-header";
+import { DestinationAndDateTrip } from "./components/destination-and-date-trip";
+import { CreateLinkModal } from "./components/create-link-modal";
 
 export function TripDetailsPage() {
   const [isCreateActivityModalOpen, setIsCreateActivityModalOpen] =
     useState(false);
-  const [activityTitleInput, setActivityTitleInput] = useState("");
-  const [dateInput, setDateInput] = useState("");
-  const [timeInput, setTimeInput] = useState("");
+  const [isCreateLinkModalOpen, setIsCreateLinkModalOpen] = useState(false);
 
   function openCreateActivityModal() {
     setIsCreateActivityModalOpen(true);
@@ -21,16 +20,32 @@ export function TripDetailsPage() {
     setIsCreateActivityModalOpen(false);
   }
 
-  return (
-    <div className="flex items-center justify-center py-10">
-      <div className="flex w-full flex-col items-center gap-8 md:max-w-6xl">
-        <DestinationAndDateHeader />
+  function openCreateLinkModal() {
+    setIsCreateLinkModalOpen(true);
+  }
 
-        <main className="flex w-full gap-16">
+  function closeCreateLinkModal() {
+    setIsCreateLinkModalOpen(false);
+  }
+
+  // function openCreateActivityModal() {
+  //   setIsCreateActivityModalOpen(true);
+  // }
+
+  // function closeCreateActivityModal() {
+  //   setIsCreateActivityModalOpen(false);
+  // }
+
+  return (
+    <div className="flex items-center justify-center px-5 py-10 md:px-10">
+      <div className="flex w-full flex-col items-center gap-8 md:max-w-6xl">
+        <DestinationAndDateTrip />
+
+        <main className="flex w-full flex-col gap-16 lg:flex-row">
           <Activities openCreateActivityModal={openCreateActivityModal} />
 
-          <div className="flex w-80 flex-col gap-6">
-            <ImportantLinks />
+          <div className="flex flex-col gap-6 lg:w-80">
+            <ImportantLinks openCreateLinkModal={openCreateLinkModal} />
 
             <div className="h-px w-full bg-zinc-800" />
 
@@ -41,14 +56,12 @@ export function TripDetailsPage() {
 
       {isCreateActivityModalOpen && (
         <CreateActivityModal
-          activityTitleInput={activityTitleInput}
           closeCreateActivityModal={closeCreateActivityModal}
-          dateInput={dateInput}
-          setActivityTitleInput={setActivityTitleInput}
-          setDateInput={setDateInput}
-          setTimeInput={setTimeInput}
-          timeInput={timeInput}
         />
+      )}
+
+      {isCreateLinkModalOpen && (
+        <CreateLinkModal closeCreateLinkModal={closeCreateLinkModal} />
       )}
     </div>
   );

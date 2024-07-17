@@ -1,29 +1,33 @@
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { DateRange } from "react-day-picker";
 
 import { ConfirmTripModal } from "./components/confirm-trip-modal";
 import { InviteGuestsModal } from "./components/invite-guests-modal";
-import { DestinationAndDateStep } from "./components/steps/destination-and-date-step";
-import { InviteGuestsStep } from "./components/steps/invite-guests-step";
+import { DestinationAndDateStep } from "./components/destination-and-date-step";
+import { InviteGuestsStep } from "./components/invite-guests-step";
+import { api } from "../../lib/api";
 
-export function NewTripPage() {
+export function CreateTripPage() {
   const navigate = useNavigate();
   const [isGuestsInputOpen, setIsGuestsInputOpen] = useState(false);
-  const [isLocationAndDateInputEditable, setIsLocationAndDateInputEditable] =
-    useState(false);
   const [isGuestsModalOpen, setIsGuestsModalOpen] = useState(false);
   const [isConfirmTripModalOpen, setIsConfirmTripModalOpen] = useState(false);
+  const [isEditingTripDateAndDestination, setIsEditingTripDateAndDestination] =
+    useState(false);
+
+  const [destination, setDestination] = useState("");
+  const [tripStartAndEndDates, setTripStartAndEndDates] = useState<
+    DateRange | undefined
+  >();
+  const [ownerName, setOwnerName] = useState("");
+  const [ownerEmail, setOwnerEmail] = useState("");
+  const [emailToInvite, setEmailToInvite] = useState("");
   const [emailsToInvite, setEmailsToInvite] = useState<string[]>([]);
-  const [destinationInput, setDestinationInput] = useState("");
-  const [dateInput, setDateInput] = useState("");
-  const [userNameInput, setUserNameInput] = useState("");
-  const [userEmailInput, setUserEmailInput] = useState("");
-  const [guestEmailInput, setGuestEmailInput] = useState("");
 
   function openGuestsInput() {
-    if (destinationInput !== "" && dateInput !== "") {
+    if (destination !== "" && tripStartAndEndDates) {
       setIsGuestsInputOpen(true);
-      setIsLocationAndDateInputEditable(true);
     }
   }
 
@@ -43,27 +47,27 @@ export function NewTripPage() {
     setIsConfirmTripModalOpen(false);
   }
 
-  function editLocationAndDateInput() {
-    setIsLocationAndDateInputEditable(false);
+  function editTripDateAndDestination() {
+    setIsEditingTripDateAndDestination(true);
   }
 
-  function saveLocationAndDateInput() {
-    setIsLocationAndDateInputEditable(true);
+  function saveTripDateAndDestination() {
+    setIsEditingTripDateAndDestination(false);
   }
 
   function addNewEmailToInvite(event: FormEvent) {
     event.preventDefault();
 
-    if (guestEmailInput === "") {
+    if (emailToInvite === "") {
       return;
     }
-    if (emailsToInvite.includes(guestEmailInput)) {
+    if (emailsToInvite.includes(emailToInvite)) {
       return;
     }
 
-    setEmailsToInvite([...emailsToInvite, guestEmailInput]);
+    setEmailsToInvite([...emailsToInvite, emailToInvite]);
 
-    setGuestEmailInput("");
+    setEmailToInvite("");
   }
 
   function removeEmailFromInvite(emailToRemove: String) {
@@ -72,19 +76,31 @@ export function NewTripPage() {
     );
   }
 
-  function createTrip(event: FormEvent) {
+  async function createTrip(event: FormEvent) {
     event.preventDefault();
 
     if (
-      destinationInput === "" ||
-      dateInput === "" ||
-      userNameInput === "" ||
-      userEmailInput === ""
+      !destination ||
+      !tripStartAndEndDates ||
+      emailsToInvite.length === 0 ||
+      !ownerName ||
+      !ownerEmail
     ) {
       return;
     }
 
-    navigate(`/trips/${123}`);
+    const response = await api.post("/trips", {
+      destination,
+      starts_at: tripStartAndEndDates.from,
+      ends_at: tripStartAndEndDates.to,
+      owner_name: ownerName,
+      owner_email: ownerEmail,
+      emails_to_invite: emailsToInvite,
+    });
+
+    const { tripId } = response.data;
+
+    navigate(`/trips/${tripId}`);
   }
 
   return (
@@ -99,15 +115,14 @@ export function NewTripPage() {
 
       <div className="flex w-full flex-col gap-4 md:max-w-3xl">
         <DestinationAndDateStep
-          dateInput={dateInput}
-          setDateInput={setDateInput}
-          destinationInput={destinationInput}
-          setDestinationInput={setDestinationInput}
-          editLocationAndDateInput={editLocationAndDateInput}
-          isLocationAndDateInputEditable={isLocationAndDateInputEditable}
-          saveLocationAndDateInput={saveLocationAndDateInput}
+          setDestination={setDestination}
+          tripStartAndEndDates={tripStartAndEndDates}
+          setTripStartAndEndDates={setTripStartAndEndDates}
           isGuestsInputOpen={isGuestsInputOpen}
           openGuestsInput={openGuestsInput}
+          editTripDateAndDestination={editTripDateAndDestination}
+          isEditingTripDateAndDestination={isEditingTripDateAndDestination}
+          saveTripDateAndDestination={saveTripDateAndDestination}
         />
 
         {isGuestsInputOpen && (
@@ -140,22 +155,24 @@ export function NewTripPage() {
       {isGuestsModalOpen && (
         <InviteGuestsModal
           emailsToInvite={emailsToInvite}
+          emailToInvite={emailToInvite}
+          setEmailToInvite={setEmailToInvite}
           addNewEmailToInvite={addNewEmailToInvite}
           closeGuestsModal={closeGuestsModal}
           removeEmailFromInvite={removeEmailFromInvite}
-          guestEmailInput={guestEmailInput}
-          setGuestEmailInput={setGuestEmailInput}
         />
       )}
 
       {isConfirmTripModalOpen && (
         <ConfirmTripModal
-          userNameInput={userNameInput}
-          userEmailInput={userEmailInput}
-          setUserNameInput={setUserNameInput}
-          setUserEmailInput={setUserEmailInput}
+          ownerName={ownerName}
+          ownerEmail={ownerEmail}
+          setOwnerName={setOwnerName}
+          setOwnerEmail={setOwnerEmail}
           createTrip={createTrip}
           closeConfirmTripModal={closeConfirmTripModal}
+          destination={destination}
+          tripStartAndEndDates={tripStartAndEndDates}
         />
       )}
     </div>

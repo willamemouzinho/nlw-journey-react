@@ -1,24 +1,24 @@
-import { FormEvent, SetStateAction } from "react";
+import { FormEvent } from "react";
 import { AtSignIcon, PlusIcon, XIcon } from "lucide-react";
 
 import { Button } from "../../../components/button";
 
 interface InviteGuestsModalProps {
-  guestEmailInput: string;
-  setGuestEmailInput: (value: SetStateAction<string>) => void;
   emailsToInvite: string[];
+  emailToInvite: string;
+  setEmailToInvite: (emailToInvite: string) => void;
   addNewEmailToInvite: (event: FormEvent) => void;
   removeEmailFromInvite: (email: string) => void;
   closeGuestsModal: () => void;
 }
 
 export function InviteGuestsModal({
+  emailsToInvite,
+  emailToInvite,
   addNewEmailToInvite,
   closeGuestsModal,
-  emailsToInvite,
-  guestEmailInput,
   removeEmailFromInvite,
-  setGuestEmailInput,
+  setEmailToInvite,
 }: InviteGuestsModalProps) {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/70 px-4">
@@ -65,9 +65,9 @@ export function InviteGuestsModal({
             <AtSignIcon strokeWidth={2} size={20} className="text-zinc-400" />
             <input
               type="email"
-              value={guestEmailInput}
-              onChange={(event) => setGuestEmailInput(event.target.value)}
               placeholder="digite o e-mail do convidado"
+              value={emailToInvite}
+              onChange={(event) => setEmailToInvite(event.target.value)}
               className="flex h-9 w-full items-center bg-transparent text-zinc-400 outline-none"
             />
           </div>

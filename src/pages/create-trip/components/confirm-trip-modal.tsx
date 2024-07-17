@@ -1,25 +1,55 @@
-import { FormEvent, SetStateAction } from "react";
+import { FormEvent } from "react";
 import { MailIcon, UserIcon, XIcon } from "lucide-react";
 
 import { Button } from "../../../components/button";
+import { DateRange } from "react-day-picker";
+import { format } from "../../../lib/date-fns";
 
 interface ConfirmTripModalProps {
-  userNameInput: string;
-  userEmailInput: string;
-  setUserNameInput: (value: React.SetStateAction<string>) => void;
-  setUserEmailInput: (value: SetStateAction<string>) => void;
+  destination: string;
+  tripStartAndEndDates: DateRange | undefined;
+  ownerName: string;
+  ownerEmail: string;
+  setOwnerName: (ownerName: string) => void;
+  setOwnerEmail: (ownerEmail: string) => void;
   createTrip: (event: FormEvent) => void;
   closeConfirmTripModal: () => void;
 }
 
 export function ConfirmTripModal({
-  userNameInput,
-  userEmailInput,
-  setUserNameInput,
-  setUserEmailInput,
+  ownerName,
+  ownerEmail,
+  setOwnerName,
+  setOwnerEmail,
   closeConfirmTripModal,
   createTrip,
+  destination,
+  tripStartAndEndDates,
 }: ConfirmTripModalProps) {
+  const formattedTripDate = (() => {
+    if (
+      !tripStartAndEndDates ||
+      !tripStartAndEndDates.from ||
+      !tripStartAndEndDates.to
+    )
+      return null;
+
+    const fromDay = format(tripStartAndEndDates.from, "d");
+    const fromMonth = format(tripStartAndEndDates.from, "MMMM");
+    const toDay = format(tripStartAndEndDates.to, "d");
+    const toMonth = format(tripStartAndEndDates.to, "MMMM");
+
+    if (fromDay === toDay && fromMonth === toMonth) {
+      return `${fromDay} de ${fromMonth}`;
+    }
+
+    if (fromMonth === toMonth) {
+      return `${fromDay} a ${toDay} de ${fromMonth}`;
+    }
+
+    return `${fromDay} de ${fromMonth} a ${toDay} de ${toMonth}`;
+  })();
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/70 px-4">
       <div className="flex w-[640px] max-w-2xl flex-col gap-5 rounded-xl bg-zinc-900 px-4 py-3 md:px-6 md:py-5">
@@ -35,13 +65,9 @@ export function ConfirmTripModal({
 
           <p className="text-sm text-zinc-400">
             Para concluir a criação da viagem para{" "}
-            <span className="font-bold text-zinc-100">
-              Florianópolis, Brasil
-            </span>{" "}
-            nas datas de{" "}
-            <span className="font-bold text-zinc-100">
-              16 a 27 de Agosto de 2024
-            </span>{" "}
+            <span className="font-bold text-zinc-100">{destination}</span> nas
+            datas de{" "}
+            <span className="font-bold text-zinc-100">{formattedTripDate}</span>{" "}
             preencha seus dados abaixo:
           </p>
         </div>
@@ -54,8 +80,8 @@ export function ConfirmTripModal({
             <UserIcon strokeWidth={2} size={20} className="text-zinc-400" />
             <input
               type="text"
-              value={userNameInput}
-              onChange={(event) => setUserNameInput(event.target.value)}
+              value={ownerName}
+              onChange={(event) => setOwnerName(event.target.value)}
               placeholder="seu nome completo"
               className="flex h-14 w-full items-center bg-transparent placeholder-zinc-400 outline-none"
             />
@@ -65,8 +91,8 @@ export function ConfirmTripModal({
             <MailIcon strokeWidth={2} size={20} className="text-zinc-400" />
             <input
               type="email"
-              value={userEmailInput}
-              onChange={(event) => setUserEmailInput(event.target.value)}
+              value={ownerEmail}
+              onChange={(event) => setOwnerEmail(event.target.value)}
               placeholder="seu e-mail pessoal"
               className="flex h-14 w-full items-center bg-transparent placeholder-zinc-400 outline-none"
             />
